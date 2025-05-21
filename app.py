@@ -3,9 +3,8 @@ import mysql.connector
 import os
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.secret_key = 'your_secret_key'  # Replace with an env variable for production
 
-# Use environment variables for DB credentials
 db_config = {
     'host': 'sql12.freesqldatabase.com',
     'user': 'sql12780373',
@@ -20,7 +19,7 @@ def get_db_connection():
 @app.route('/')
 def home():
     if 'username' in session:
-        return f"Welcome {session['username']}! <a href='/logout'>Logout</a>"
+        return f"<h2>Welcome {session['username']}!</h2><br><a href='/logout'>Logout</a>"
     return "<a href='/login'>Login</a> | <a href='/register'>Register</a>"
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -71,4 +70,4 @@ def logout():
     return redirect('/')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")
