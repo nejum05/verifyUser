@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, redirect, session
 import mysql.connector
-import os
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Replace with an env variable for production
+app.secret_key = 'your_secret_key'
 
+# Your db4free MySQL config
 db_config = {
     'host': 'sql12.freesqldatabase.com',
     'user': 'sql12780373',
@@ -19,11 +19,12 @@ def get_db_connection():
 @app.route('/')
 def home():
     if 'username' in session:
-        return f"<h2>Welcome {session['username']}!</h2><br><a href='/logout'>Logout</a>"
-    return "<a href='/login'>Login</a> | <a href='/register'>Register</a>"
+        return render_template('welcome.html', username=session['username'])
+    return redirect('/login')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    message = ''
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -33,18 +34,19 @@ def register():
             cursor = conn.cursor()
             cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, password))
             conn.commit()
+            message = "Registration successful! Please login."
+            return redirect('/login')
         except mysql.connector.errors.IntegrityError:
-            return "Username already exists."
+            message = "Username already exists."
         finally:
             cursor.close()
             conn.close()
 
-        return redirect('/login')
-
-    return render_template('register.html')
+    return render_template('register.html', message=message)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    message = ''
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -60,14 +62,14 @@ def login():
             session['username'] = username
             return redirect('/')
         else:
-            return "Invalid username or password."
+            message = "Invalid username or password."
 
-    return render_template('login.html')
+    return render_template('login.html', message=message)
 
 @app.route('/logout')
 def logout():
     session.pop('username', None)
-    return redirect('/')
+    return redirect('/login')
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True)
