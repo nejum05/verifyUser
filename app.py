@@ -7,10 +7,11 @@ app.secret_key = 'your_secret_key'
 
 # Use environment variables for DB credentials
 db_config = {
-    'host': os.environ.get('DB_HOST'),
-    'user': os.environ.get('DB_USER'),
-    'password': os.environ.get('DB_PASSWORD'),
-    'database': os.environ.get('DB_NAME')
+    'host': 'sql12.freesqldatabase.com',
+    'user': 'sql12780373',
+    'password': 'plR7hiKCmt',
+    'database': 'sql12780373',
+    'port': 3306
 }
 
 def get_db_connection():
